@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>CodeWithHarry-Website Clone2021</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="prism.css">
+    <script src="prism.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="img">
+        <img src="harry.png"  class="img-fluid" alt="">
+    </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active mx-2">
+              <a class="nav-link" href="home.html">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item mx-2">
+              <a class="nav-link active" href="index.html">Videos</a>
+            </li>
+
+            <li class="nav-item mx-2">
+                <a class="nav-link active" href="blog.html">Blog</a>
+              </li>
+           
+            <li class="nav-item mx-2">
+              <a class="nav-link active" href="contact.html">Contact Us</a>
+            </li>
+          </ul>
+          <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            <button class="btn btn-danger mx-1">Log In</button>
+            <button class="btn btn-danger mx-1">Sign In</button>
+          </form>
+        </div>
+      </nav>
+
+
+      <div class="container-fluid c-col">
+        <div class="row f-block">
+          <div class="video-menu">
+            <video class="video" controls autoplay>
+              <source src="c1.mp4" type="video/mp4">
+                          </video>         
+                          <div class="container-fluid bg-light h-auto">
+              <ul class="nav-tabs nav nav-justified">
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="#home" data-toggle="tab">Overview</a>
+                    
+                  </li>
+    
+                  <li class="nav-item">
+                    <a class="nav-link text-dark" href="#Announce" data-toggle="tab">QandA</a>
+                  </li>
+    
+                  <li class="nav-item">
+                    <a class="nav-link text-dark" href="#Noti" data-toggle="tab">Files</a>
+                  </li>
+    
+                  <li class="nav-item text-dark">
+                    <a class="nav-link text-dark" href="#about" data-toggle="tab">Announcements</a>
+                  </li>
+              </ul>
+                
+              <div class="tab-content container-fluid">
+                  <div class="tab-pane active" id="home">
+                <h1 class="text-dark head">HTML Boiler Plate</h1>
+                <pre class="language-js"><code>var i=10;
+const path = require('path');
+const conn1=require("./db/contact");
+const Register=require("./models/mod");
+const Comment=require("./models/comment");
+const like=require("./models/like");
+var bodyParser = require('body-parser');
+const fs = require('fs');
+const bcrypt=require("bcryptjs");
+const mongoose = require('mongoose');
+const { find } = require('./models/comment');
+
+// schema for contact Form
+const collegeSchema = new mongoose.Schema({
+cemail:{
+type:String,
+required:true,
+},
+cpassword:{
+type:String,
+required:true,
+},
+cnumber:{
+type:String,
+required:true,
+},
+ctext:{
+type:String,
+required:true
+}
+});
+
+// models for contact form
+let collegeData=mongoose.model('admission',collegeSchema);
+
+
+const port=80;
+const app=express();
+
+
+app.use('/static',express.static('static'));
+app.use(express.urlencoded({extended:true}));
+
+app.set('view engine', 'ejs');
+app.set("views", path.join(__dirname,'views'));
+
+// app.get("/signin",routes);
+// app.post("signin",routes);
+app.get("/onlineadmission",(req,res)=>{
+const params={};
+res.status(201).render('index.ejs',params);
+});
+
+app.get("/contact",(req,res)=>{
+res.status(201).render('contact.ejs');
+});
+
+app.get("/login",(req,res)=>{
+res.status(201).render('login.ejs');
+});
+
+app.post("/login",async(req,res)=>{
+var msg;
+try{
+const semail=req.body.lemail;
+const lpassword=req.body.lpassword;
+console.log(semail,lpassword);
+let useremail=await Register.findOne({semail:semail});
+const isMatch=await bcrypt.compare(lpassword,useremail.spass);
+console.log(useremail);
+if(isMatch)
+{
+res.status(201).render("index.ejs");
+}
+else{
+res.status(400).render("login.ejs",{'err':'Invalid Credentials please Enter Valid Details'});
+}
+}
+catch(err)
+{
+res.status(400).render("login.ejs",{'err':'Invalid Credentials Please Enter Valid Details'});
+}
+err="";
+});
+
+app.get("/signin",(req,res)=>{
+res.status(201).render('signin.ejs');
+})
+
+app.post("/signin",(req,res)=>{
+var err;
+var user;
+if(typeof err=='undefined')
+{
+var myData=new Register(req.body);
+user=myData;
+//  const token= await Register.generateAuthToken();
+myData.save().then(()=>{
+res.render('index.ejs',);
+
+}).catch(()=>{
+res.send("<h1>Data Is Stored not To The Sign In Database</h1>");
+})
+
+}
+if(myData.sfirst==" " || myData.slast==" " || myData.semail==" " || myData.spass=="" || myData.spaas2==""){
+err="please Fill All The Fields";
+res.status(201).render('signin',{'err':err});
+}
+if(myData.spass!=myData.spass2)
+{
+err="Passwords Don't Match";
+res.status(400).render('signin',{'err':err});
+}
+
+})
+</code></pre>
+<h1>The Code With Harry Source Code!</h1>
+<h5>This Is Code For Navber Described In The Video Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe ducimus repellendus neque animi. Dolore corporis non est. Doloribus velit nostrum, optio atque est nobis officia illum odio eligendi error maiores totam illo. Veniam nulla amet possimus facilis explicabo maxime porro exercitationem corrupti. Ab fugiat quis veritatis molestiae temporibus facilis earum.
+  This Is Code For Navber Described In The Video Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe ducimus repellendus neque animi. Dolore corporis non est. Doloribus velit nostrum, optio atque est nobis officia illum odio eligendi error maiores totam illo. Veniam nulla amet possimus facilis explicabo maxime porro exercitationem corrupti. Ab fugiat quis veritatis molestiae temporibus facilis earum.
+</h5>
+                <pre class="language-js"><code>console.log("hii");
+let a=10;
+b=10;
+console.log(a+b);
+const path = require('path');
+const conn1=require("./db/contact");
+const Register=require("./models/mod");
+const Comment=require("./models/comment");
+const like=require("./models/like");
+var bodyParser = require('body-parser');
+const fs = require('fs');
+const bcrypt=require("bcryptjs");
+const mongoose = require('mongoose');
+const { find } = require('./models/comment');
+
+// schema for contact Form
+const collegeSchema = new mongoose.Schema({
+cemail:{
+type:String,
+required:true,
+},
+cpassword:{
+type:String,
+required:true,
+},
+cnumber:{
+type:String,
+required:true,
+},
+ctext:{
+type:String,
+required:true
+}
+});
+
+// models for contact form
+let collegeData=mongoose.model('admission',collegeSchema);
+
+
+const port=80;
+const app=express();
+
+
+app.use('/static',express.static('static'));
+app.use(express.urlencoded({extended:true}));
+
+app.set('view engine', 'ejs');
+app.set("views", path.join(__dirname,'views'));
+
+// app.get("/signin",routes);
+// app.post("signin",routes);
+app.get("/onlineadmission",(req,res)=>{
+const params={};
+res.status(201).render('index.ejs',params);
+});
+
+app.get("/contact",(req,res)=>{
+res.status(201).render('contact.ejs');
+});
+
+app.get("/login",(req,res)=>{
+res.status(201).render('login.ejs');
+});
+
+app.post("/login",async(req,res)=>{
+var msg;
+try{
+const semail=req.body.lemail;
+const lpassword=req.body.lpassword;
+console.log(semail,lpassword);
+let useremail=await Register.findOne({semail:semail});
+const isMatch=await bcrypt.compare(lpassword,useremail.spass);
+console.log(useremail);
+if(isMatch)
+{
+res.status(201).render("index.ejs");
+}
+else{
+res.status(400).render("login.ejs",{'err':'Invalid Credentials please Enter Valid Details'});
+}
+}
+catch(err)
+{
+res.status(400).render("login.ejs",{'err':'Invalid Credentials Please Enter Valid Details'});
+}
+err="";
+});
+
+app.get("/signin",(req,res)=>{
+res.status(201).render('signin.ejs');
+})
+
+app.post("/signin",(req,res)=>{
+var err;
+var user;
+if(typeof err=='undefined')
+{
+var myData=new Register(req.body);
+user=myData;
+//  const token= await Register.generateAuthToken();
+myData.save().then(()=>{
+res.render('index.ejs',);
+
+}).catch(()=>{
+res.send("<h1>Data Is Stored not To The Sign In Database</h1>");
+})
+
+}
+if(myData.sfirst==" " || myData.slast==" " || myData.semail==" " || myData.spass=="" || myData.spaas2==""){
+err="please Fill All The Fields";
+res.status(201).render('signin',{'err':err});
+}
+if(myData.spass!=myData.spass2)
+{
+err="Passwords Don't Match";
+res.status(400).render('signin',{'err':err});
+}
+
+})</code></pre>
+<h3>Code For Navbar AS Described In The Video</h3>
+<pre class="language-js"><code>const routes=require('./routes.js');
+const express = require("express");
+const path = require('path');
+const conn1=require("./db/contact");
+const Register=require("./models/mod");
+const Comment=require("./models/comment");
+const like=require("./models/like");
+var bodyParser = require('body-parser');
+const fs = require('fs');
+const bcrypt=require("bcryptjs");
+const mongoose = require('mongoose');
+const { find } = require('./models/comment');
+
+// schema for contact Form
+const collegeSchema = new mongoose.Schema({
+cemail:{
+type:String,
+required:true,
+},
+cpassword:{
+type:String,
+required:true,
+},
+cnumber:{
+type:String,
+required:true,
+},
+ctext:{
+type:String,
+required:true
+}
+});
+
+// models for contact form
+let collegeData=mongoose.model('admission',collegeSchema);
+
+
+const port=80;
+const app=express();
+
+
+app.use('/static',express.static('static'));
+app.use(express.urlencoded({extended:true}));
+
+app.set('view engine', 'ejs');
+app.set("views", path.join(__dirname,'views'));
+
+// app.get("/signin",routes);
+// app.post("signin",routes);
+app.get("/onlineadmission",(req,res)=>{
+const params={};
+res.status(201).render('index.ejs',params);
+});
+
+app.get("/contact",(req,res)=>{
+res.status(201).render('contact.ejs');
+});
+
+app.get("/login",(req,res)=>{
+res.status(201).render('login.ejs');
+});
+
+app.post("/login",async(req,res)=>{
+var msg;
+try{
+const semail=req.body.lemail;
+const lpassword=req.body.lpassword;
+console.log(semail,lpassword);
+let useremail=await Register.findOne({semail:semail});
+const isMatch=await bcrypt.compare(lpassword,useremail.spass);
+console.log(useremail);
+if(isMatch)
+{
+res.status(201).render("index.ejs");
+}
+else{
+res.status(400).render("login.ejs",{'err':'Invalid Credentials please Enter Valid Details'});
+}
+}
+catch(err)
+{
+res.status(400).render("login.ejs",{'err':'Invalid Credentials Please Enter Valid Details'});
+}
+err="";
+});
+
+app.get("/signin",(req,res)=>{
+res.status(201).render('signin.ejs');
+})
+
+app.post("/signin",(req,res)=>{
+var err;
+var user;
+if(typeof err=='undefined')
+{
+var myData=new Register(req.body);
+user=myData;
+//  const token= await Register.generateAuthToken();
+myData.save().then(()=>{
+res.render('index.ejs',);
+
+}).catch(()=>{
+res.send("<h1>Data Is Stored not To The Sign In Database</h1>");
+})
+
+}
+if(myData.sfirst==" " || myData.slast==" " || myData.semail==" " || myData.spass=="" || myData.spaas2==""){
+err="please Fill All The Fields";
+res.status(201).render('signin',{'err':err});
+}
+if(myData.spass!=myData.spass2)
+{
+err="Passwords Don't Match";
+res.status(400).render('signin',{'err':err});
+}
+
+})
+app.post('/contactform', (req, res) => {
+var myobj2 = new collegeData(req.body);
+
+console.log(myobj2.cemail);
+console.log(myobj2.cpassword);
+console.log(myobj2.cnumber);
+console.log(myobj2.ctext);
+// if(myobj.kname.length>=5 && myobj.kdate.length>=5 && myobj.kaddress.length>=20 && myobj.kemail.length>=10)
+myobj2.save().then(() => {
+res.send("<h1>Data Is Stored</h1>");
+})
+.catch(() => {
+res.send("<h1> Data Is not stored</h1>");
+
+});
+});
+
+// app.get("/review",async(req,res)=>{
+//     try {
+//         const getData=await Comment.find({});
+
+//         console.log(getData);
+//         res.render('reviews.ejs',{'Records':getData});
+//     } catch (error) {
+//         console.log(error);
+//     }
+
+// });
+
+// app.get("/review",async(req,res)=>{
+
+//     try {
+//         const getData=await Comment.find({});
+//        Records=getData;
+//         res.render('reviews.ejs',Records);
+//     } catch (error) {
+//         console.log(error);
+//     }
+
+// });
+
+// app.post("/comments",async(req,res)=>{
+
+//     try {
+//         const commentData=new Comment({comments:req.body.comments});
+//               const comments=await commentData.save();
+//               const getData=await Comment.find({});
+//                 Records=getData;
+//               res.status(201).render("reviews.ejs",Records);
+//             // res.redirect('review');
+
+//     } catch (err) {
+//       console.log(err);   
+//     }
+// });
+
+app.get("/review",async(req,res)=>{
+try {
+const getData=await Comment.find({});
+console.log(getData);
+Records=getData;
+res.status(201).render("reviews.ejs",Records);
+} catch (error) {
+console.log(error);
+}
+});
+app.post("/comments",async(req,res)=>{
+
+try {
+const commentData=new Comment({comments:req.body.comments});
+const comments=await commentData.save();
+const getData=await Comment.find({});
+Records=getData;
+res.status(201).render("reviews.ejs",Records);
+// res.redirect('review');
+
+} catch (err) {
+console.log(err);   
+}
+});
+
+app.post("/delete",async(req,res)=>{
+const check=req.body.button;
+console.log(check);
+Notes.findByIdAndRemove(check,(err)=>{
+if(!err)
+{
+console.log("deleted");
+res.redirect("/");
+}
+});
+});
+
+app.post("/like",async(req,res)=>{
+try {
+let like=0;
+const likeData=new like({$inc:{like:counter}});
+const likes=await likeData.save();
+const getLikes=await find({});
+const  likeRecords=getLikes
+res.status(201).render("reviews.ejs",likeRecords);
+} catch (error) {
+console.log(err);   
+}
+});
+
+app.get("/calculate",(req,res)=>{
+res.status(201).render("calculate.ejs");
+})
+
+app.listen(port, () => {
+console.log(`server running on port ${port}`);
+});
+  </code>
+  </pre>
+<button class="btn btn-danger mx-2 my-2">Download files</button>
+<button class="btn btn-danger">Previous Video</button>
+               </div>
+    
+                  <div class="tab-pane" id="Announce">
+                    <p>No Annoucements</p>
+                         
+                      </div>
+    
+                      <div class="tab-pane" id="Noti">
+                        <h1 class="text-warning bg-danger my-4">Welcome To Notification Page</h1>
+                        <p class="text-success">Lorem ipsum dolor sit amet consectetur adipisicing elit. Non, cupiditate possimus repudiandae beatae at tempore exercitationem vitae sit ipsam similique fuga asperiores quaerat quibusdam officiis soluta quae ex impedit sint rerum! Laborum optio iste id reiciendis quas quidem est officiis.</p>
+                        <button class="btn btn-primary">Add Notes</button>
+                          </div>
+    
+    
+                          <div class="tab-pane" id="about">
+                            <h1 class="text-warning bg-primary my-4">Welcome To About Page</h1>
+                            <p class="text-success">Lorem ipsum dolor sit amet consectetur adipisicing elit. Non, cupiditate possimus repudiandae beatae at tempore exercitationem vitae sit ipsam similique fuga asperiores quaerat quibusdam officiis soluta quae ex impedit sint rerum! Laborum optio iste id reiciendis quas quidem est officiis.</p>
+                            <button class="btn btn-primary">Add Notes</button>
+                              </div>
+              </div>
+    
+          </div>
+          </div>
+
+          <div class="video-list">
+            <div class="plus">
+            
+           <h5 class="bg-light py-3 px-2 heading" style="width:100%;">Course Content<span><button class="btn-sm btn-danger px-2 HideVideo" >Hide Player</button></span>
+           <button class="btn-sm btn-danger"  id="showVideos"> + </button></h5>    
+        
+            </div>
+
+                <div class="menu-list">
+               <div class="list-item py-4 px-2 active">
+               <p class="videoOn">1. Introduction to Java + Installing Java JDK and IntelliJ IDEA for Java</p>
+               <span>Free Youtube Video</span>
+              </div>
+
+              <div class="list-item py-4 px-2">
+                <p class="videoOn">2. Introduction to Java + Installing Java JDK and IntelliJ IDEA for Java</p>
+                <span>Free Youtube Video</span>
+               </div>
+
+               <div class="list-item px-2 py-4">
+                <p class="videoOn">3. Introduction to Java + Installing Java JDK and IntelliJ IDEA for Java</p>
+                <span>Free Youtube Video</span>
+               </div>
+
+               <div class="list-item px-2 py-4">
+                <p class="videoOn">4. Introduction to Java + Installing Java JDK and IntelliJ IDEA for Java</p>
+                <span>Free Youtube Video</span>
+               </div>
+
+               <div class="list-item px-2 py-4">
+                <p class="videoOn">5. Introduction to Java + Installing Java JDK and IntelliJ IDEA for Java</p>
+                <span>Free Youtube Video</span>
+               </div>
+
+               <div class="list-item px-2 py-4">
+                <p class="videoOn">6. Introduction to Java + Installing Java JDK and IntelliJ IDEA for Java</p>
+                <span>Free Youtube Video</span>
+               </div>
+
+               <div class="list-item px-2 py-4">
+                <p class="videoOn">7. Introduction to Java + Installing Java JDK and IntelliJ IDEA for Java</p>
+                <span>Free Youtube Video</span>
+               </div>
+
+               <div class="list-item px-2 py-4">
+                <p class="videoOn">8. Introduction to Java + Installing Java JDK and IntelliJ IDEA for Java</p>
+                <span>Free Youtube Video</span>
+               </div>
+
+               <div class="list-item px-2 py-4">
+                <p class="videoOn">9. Introduction to Java + Installing Java JDK and IntelliJ IDEA for Java</p>
+                <span>Free Youtube Video</span>
+               </div>
+
+               <div class="list-item px-2 py-4">
+                <p class="videoOn">10. Introduction to Java + Installing Java JDK and IntelliJ IDEA for Java</p>
+                <span>Free Youtube Video</span>
+               </div>
+
+             </div>
+
+             
+          </div>
+        </div>
+
+      </div>
+      <div class="container-fluid text-center bg-dark footer">
+        <h5 class="text-white p-10">Copyright © 2020-2021 CodeWithHarry.com</h5>
+      </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="index.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>
